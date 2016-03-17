@@ -1,0 +1,99 @@
+begin parameters
+  ksynMdm2         4.950000e-04
+  kdegMdm2         4.330000e-04
+  ksynp53          6.000000e-03
+  kdegp53          8.250000e-04
+  kbinMdm2p53      1.155000e-03
+  krelMdm2p53      1.155000e-05
+  ksynMdm2mRNA     1.000000e-04
+  kdegMdm2mRNA     1.000000e-04
+  kactATM          1.000000e-04
+  kdegATMMdm2      4.000000e-04
+  kinactATM        5.000000e-04
+  kphosp53         5.000000e-04
+  kdephosp53       5.000000e-01
+  kphosMdm2        2.000000e+00
+  kdephosMdm2      5.000000e-01
+  kdam             8.000000e-02
+  krepair          2.000000e-05
+  kproteff         1.000000e+00
+  ksynp53mRNA      1.000000e-03
+  kdegp53mRNA      1.000000e-04
+  IR               0.000000e+00
+  Mdm2_0           5.000000e+00
+  p53_0            5.000000e+00
+  Mdm2_p53_0       9.500000e+01
+  Mdm2_mRNA_0      1.000000e+01
+  p53_mRNA_0       1.000000e+01
+  ATMI_0           2.000000e+02
+  __source_0       1.000000e+00
+  functionRate6    kdegMdm2*kproteff
+  functionRate8    kdegp53*kproteff
+  functionRate11   kdam*IR
+end parameters
+
+begin molecule types
+  Mdm2()
+  p53()
+  Mdm2_p53()
+  Mdm2_mRNA()
+  p53_mRNA()
+  ATMA()
+  ATMI()
+  p53_P()
+  Mdm2_P()
+  damDNA()
+  __source()
+  __sink()
+end molecule types
+
+begin observables
+  Molecules obs_Mdm2        Mdm2()
+  Molecules obs_p53         p53()
+  Molecules obs_Mdm2_p53    Mdm2_p53()
+  Molecules obs_Mdm2_mRNA   Mdm2_mRNA()
+  Molecules obs_p53_mRNA    p53_mRNA()
+  Molecules obs_ATMA        ATMA()
+  Molecules obs_ATMI        ATMI()
+  Molecules obs_p53_P       p53_P()
+  Molecules obs_Mdm2_P      Mdm2_P()
+  Molecules obs_damDNA      damDNA()
+end observables
+
+begin species
+  Mdm2()        Mdm2_0
+  p53()         p53_0
+  Mdm2_p53()    Mdm2_p53_0
+  Mdm2_mRNA()   Mdm2_mRNA_0
+  p53_mRNA()    p53_mRNA_0
+  ATMI()        ATMI_0
+  __source()    __source_0
+end species
+
+begin reaction rules
+  p53mRNASynthesis:     __source() -> p53_mRNA() + __source()    ksynp53mRNA
+  p53mRNADegradation:   p53_mRNA() -> __sink()    kdegp53mRNA
+  Mdm2Synthesis:        Mdm2_mRNA() -> Mdm2_mRNA() + Mdm2()    ksynMdm2
+  Mdm2mRNASynthesis1:   p53() -> p53() + Mdm2_mRNA()    ksynMdm2mRNA
+  Mdm2mRNASynthesis2:   p53_P() -> p53_P() + Mdm2_mRNA()    ksynMdm2mRNA
+  Mdm2mRNADegradation:  Mdm2_mRNA() -> __sink()    kdegMdm2mRNA
+  Mdm2Degradation:      Mdm2() -> __sink()    functionRate6
+  p53Synthesis:         p53_mRNA() -> p53() + p53_mRNA()    ksynp53
+  p53Degradation:       Mdm2_p53() -> Mdm2()    functionRate8
+  P53_Mdm2Binding:      p53() + Mdm2() -> Mdm2_p53()    kbinMdm2p53
+  P53_Mdm2Release:      Mdm2_p53() -> p53() + Mdm2()    krelMdm2p53
+  DNAdamage:            __source() -> damDNA() + __source()    functionRate11
+  DNArepair:            damDNA() -> __sink()    krepair
+  ATMactivation:        damDNA() + ATMI() -> damDNA() + ATMA()    kactATM
+  p53phoshorylation:    p53() + ATMA() -> p53_P() + ATMA()    kphosp53
+  p53dephosorylation:   p53_P() -> p53()    kdephosp53
+  Mdm2phoshorylation:   Mdm2() + ATMA() -> Mdm2_P() + ATMA()    kphosMdm2
+  Mdm2dephosorylation:  Mdm2_P() -> Mdm2()    kdephosMdm2
+  Mdm2Pdegradation:     Mdm2_P() -> __sink()    kdegATMMdm2
+  ATMInactivation:      ATMA() -> ATMI()    kinactATM
+end reaction rules
+
+
+begin actions
+generate_network({overwrite=>1})
+end actions

@@ -1,0 +1,82 @@
+# Created by BioNetGen 2.2.6-stable
+begin parameters
+    1 ksynMdm2        4.950000e-04  # Constant
+    2 kdegMdm2        4.330000e-04  # Constant
+    3 ksynp53         6.000000e-03  # Constant
+    4 kdegp53         8.250000e-04  # Constant
+    5 kbinMdm2p53     1.155000e-03  # Constant
+    6 krelMdm2p53     1.155000e-05  # Constant
+    7 ksynMdm2mRNA    1.000000e-04  # Constant
+    8 kdegMdm2mRNA    1.000000e-04  # Constant
+    9 kactATM         1.000000e-04  # Constant
+   10 kdegATMMdm2     4.000000e-04  # Constant
+   11 kinactATM       5.000000e-04  # Constant
+   12 kphosp53        5.000000e-04  # Constant
+   13 kdephosp53      5.000000e-01  # Constant
+   14 kphosMdm2       2.000000e+00  # Constant
+   15 kdephosMdm2     5.000000e-01  # Constant
+   16 kdam            8.000000e-02  # Constant
+   17 krepair         2.000000e-05  # Constant
+   18 kproteff        1.000000e+00  # Constant
+   19 ksynp53mRNA     1.000000e-03  # Constant
+   20 kdegp53mRNA     1.000000e-04  # Constant
+   21 IR              0.000000e+00  # Constant
+   22 Mdm2_0          5.000000e+00  # Constant
+   23 p53_0           5.000000e+00  # Constant
+   24 Mdm2_p53_0      9.500000e+01  # Constant
+   25 Mdm2_mRNA_0     1.000000e+01  # Constant
+   26 p53_mRNA_0      1.000000e+01  # Constant
+   27 ATMI_0          2.000000e+02  # Constant
+   28 __source_0      1.000000e+00  # Constant
+   29 functionRate6   kdegMdm2*kproteff  # ConstantExpression
+   30 functionRate8   kdegp53*kproteff  # ConstantExpression
+   31 functionRate11  kdam*IR  # ConstantExpression
+end parameters
+begin species
+    1 Mdm2() Mdm2_0
+    2 p53() p53_0
+    3 Mdm2_p53() Mdm2_p53_0
+    4 Mdm2_mRNA() Mdm2_mRNA_0
+    5 p53_mRNA() p53_mRNA_0
+    6 ATMI() ATMI_0
+    7 __source() __source_0
+    8 __sink() 0
+    9 damDNA() 0
+   10 ATMA() 0
+   11 p53_P() 0
+   12 Mdm2_P() 0
+end species
+begin reactions
+    1 7 5,7 ksynp53mRNA #p53mRNASynthesis
+    2 5 8 kdegp53mRNA #p53mRNADegradation
+    3 4 1,4 ksynMdm2 #Mdm2Synthesis
+    4 2 2,4 ksynMdm2mRNA #Mdm2mRNASynthesis1
+    5 4 8 kdegMdm2mRNA #Mdm2mRNADegradation
+    6 1 8 functionRate6 #Mdm2Degradation
+    7 5 2,5 ksynp53 #p53Synthesis
+    8 3 1 functionRate8 #p53Degradation
+    9 1,2 3 kbinMdm2p53 #P53_Mdm2Binding
+   10 3 1,2 krelMdm2p53 #P53_Mdm2Release
+   11 7 7,9 functionRate11 #DNAdamage
+   12 9 8 krepair #DNArepair
+   13 6,9 9,10 kactATM #ATMactivation
+   14 2,10 10,11 kphosp53 #p53phoshorylation
+   15 1,10 10,12 kphosMdm2 #Mdm2phoshorylation
+   16 10 6 kinactATM #ATMInactivation
+   17 11 4,11 ksynMdm2mRNA #Mdm2mRNASynthesis2
+   18 11 2 kdephosp53 #p53dephosorylation
+   19 12 1 kdephosMdm2 #Mdm2dephosorylation
+   20 12 8 kdegATMMdm2 #Mdm2Pdegradation
+end reactions
+begin groups
+    1 obs_Mdm2             1
+    2 obs_p53              2
+    3 obs_Mdm2_p53         3
+    4 obs_Mdm2_mRNA        4
+    5 obs_p53_mRNA         5
+    6 obs_ATMA             10
+    7 obs_ATMI             6
+    8 obs_p53_P            11
+    9 obs_Mdm2_P           12
+   10 obs_damDNA           9
+end groups
